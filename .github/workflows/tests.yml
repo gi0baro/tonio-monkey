@@ -1,0 +1,60 @@
+name: Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  Linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.14t]
+
+    services:
+      http:
+        options: --name http
+        image: ghcr.io/astral-sh/uv:debian-slim
+        env:
+          UV_PYTHON: 3.14
+        entrypoint: uvx
+        command: --from granian granian --working-dir /app --host 0.0.0.0 http_echo:app
+        ports:
+        - 8000:8000
+        volumes:
+        - ${{ github.workspace }}/dmnt:/app
+
+      # postgres:
+      #   image: postgres:18
+      #   env:
+      #     POSTGRES_PASSWORD: postgres
+      #     POSTGRES_DB: test
+      #   ports:
+      #   - 5432:5432
+
+    env:
+      TM_HTTPX_SERVER_ENDPOINT: http://127.0.0.1:8000
+      # TM_PSYCOPG_DSN: ...
+
+    steps:
+    - uses: actions/checkout@v6
+    - run: cp -r tests/_utils dmnt/
+    - uses: docker://docker
+      with:
+        args: docker restart http
+    - uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: false
+    - name: Install
+      run: |
+        uv python install ${{ matrix.python-version }}
+        uv venv .venv
+        uv sync --all-extras --group test
+    - name: Test
+      run: |
+        uv run pytest -v tests

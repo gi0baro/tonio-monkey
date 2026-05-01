@@ -11,7 +11,7 @@ import tonio.colored as tonio
 import tonio.colored.net as net
 import tonio.colored.net.tls
 import tonio.colored.sync as sync
-import tonio.colored.time
+import tonio.colored.time as time
 import tonio.exceptions
 from httpcore._backends.base import SOCKET_OPTION, AsyncNetworkBackend, AsyncNetworkStream
 from httpcore._exceptions import (
@@ -45,7 +45,7 @@ class TonioStream(AsyncNetworkStream):
         with map_exceptions(exc_map):
             if timeout is None:
                 return await self._stream.receive_some(max_bytes)
-            result, completed = await tonio.time.timeout(self._stream.receive_some(max_bytes), timeout)
+            result, completed = await time.timeout(self._stream.receive_some(max_bytes), timeout)
             if not completed:
                 raise ReadTimeout("Timed out")
             return result
@@ -61,7 +61,7 @@ class TonioStream(AsyncNetworkStream):
             if timeout is None:
                 await self._stream.send_all(buffer)
                 return
-            _, completed = await tonio.time.timeout(self._stream.send_all(buffer), timeout)
+            _, completed = await time.timeout(self._stream.send_all(buffer), timeout)
             if not completed:
                 raise WriteTimeout("Timed out")
 
@@ -92,7 +92,7 @@ class TonioStream(AsyncNetworkStream):
             if timeout is None:
                 await tls_stream.handshake()
             else:
-                _, completed = await tonio.time.timeout(tls_stream.handshake(), timeout)
+                _, completed = await time.timeout(tls_stream.handshake(), timeout)
                 if not completed:
                     raise ConnectTimeout("Timed out")
         return TonioStream(tls_stream, socket_stream=self._socket_stream)
@@ -130,7 +130,7 @@ class TonioBackend(AsyncNetworkBackend):
             if timeout is None:
                 stream = await net.open_tcp_stream(host, port, local_address=local_address)
             else:
-                result, completed = await tonio.time.timeout(
+                result, completed = await time.timeout(
                     net.open_tcp_stream(host, port, local_address=local_address),
                     timeout,
                 )
@@ -155,7 +155,7 @@ class TonioBackend(AsyncNetworkBackend):
             if timeout is None:
                 stream = await net.open_unix_socket(path)
             else:
-                result, completed = await tonio.time.timeout(
+                result, completed = await time.timeout(
                     net.open_unix_socket(path),
                     timeout,
                 )
@@ -220,3 +220,27 @@ httpcore._synchronization.AsyncLock = sync.Lock
 httpcore._synchronization.AsyncEvent = TonioAsyncEvent
 httpcore._synchronization.AsyncSemaphore = TonioAsyncSemaphore
 httpcore._synchronization.AsyncShieldCancellation = TonioAsyncShieldCancellation
+
+_patched_modules = []
+for _name in (
+    "httpcore._async.connection",
+    "httpcore._async.connection_pool",
+    "httpcore._async.http11",
+    "httpcore._async.http2",
+    "httpcore._async.http_proxy",
+    "httpcore._async.socks_proxy",
+):
+    try:
+        _patched_modules.append(__import__(_name, fromlist=["_"]))
+    except ImportError:
+        pass
+
+for _mod in _patched_modules:
+    if hasattr(_mod, "AsyncLock"):
+        _mod.AsyncLock = sync.Lock
+    if hasattr(_mod, "AsyncEvent"):
+        _mod.AsyncEvent = TonioAsyncEvent
+    if hasattr(_mod, "AsyncSemaphore"):
+        _mod.AsyncSemaphore = TonioAsyncSemaphore
+    if hasattr(_mod, "AsyncShieldCancellation"):
+        _mod.AsyncShieldCancellation = TonioAsyncShieldCancellation
