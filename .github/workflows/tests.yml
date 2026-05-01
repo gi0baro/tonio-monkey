@@ -29,17 +29,17 @@ jobs:
         volumes:
         - ${{ github.workspace }}/dmnt:/app
 
-      # postgres:
-      #   image: postgres:18
-      #   env:
-      #     POSTGRES_PASSWORD: postgres
-      #     POSTGRES_DB: test
-      #   ports:
-      #   - 5432:5432
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test
+        ports:
+        - 5432:5432
 
     env:
       TM_HTTPX_SERVER_ENDPOINT: http://127.0.0.1:8000
-      # TM_PSYCOPG_DSN: ...
+      TM_PSYCOPG_DSN: postgresql://postgres:postgres@localhost:5432/test
 
     steps:
     - uses: actions/checkout@v6

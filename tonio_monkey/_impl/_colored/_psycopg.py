@@ -29,7 +29,7 @@ async def _wait_async(gen: typing.Any, fileno: int, interval: float = 0.0) -> ty
         raise ValueError("indefinite wait not supported anymore")
 
     runtime = get_runtime()
-    timeout = interval if interval else None
+    timeout = round(max(0, interval * 1_000_000)) if interval else None
     ev_r, ev_w = None, None
 
     try:
@@ -47,8 +47,8 @@ async def _wait_async(gen: typing.Any, fileno: int, interval: float = 0.0) -> ty
                 if ev_w is None:
                     ev_w = runtime._io_event_w(fileno)
                 await tonio.select(
-                    ev_r.wait(timeout),
-                    ev_w.wait(timeout),
+                    ev_r.waiter(timeout),
+                    ev_w.waiter(timeout),
                 )
                 if ev_r.is_set():
                     ready |= READY_R
@@ -59,14 +59,14 @@ async def _wait_async(gen: typing.Any, fileno: int, interval: float = 0.0) -> ty
             elif reader:
                 if ev_r is None:
                     ev_r = runtime._io_event_r(fileno)
-                await ev_r.wait(timeout)
+                await ev_r.waiter(timeout)
                 if ev_r.is_set():
                     ready |= READY_R
                     ev_r = None
             elif writer:
                 if ev_w is None:
                     ev_w = runtime._io_event_w(fileno)
-                await ev_w.wait(timeout)
+                await ev_w.waiter(timeout)
                 if ev_w.is_set():
                     ready |= READY_W
                     ev_w = None
@@ -85,7 +85,7 @@ async def _wait_conn_async(gen: typing.Any, interval: float = 0.0) -> typing.Any
         raise ValueError("indefinite wait not supported anymore")
 
     runtime = get_runtime()
-    timeout = interval if interval else None
+    timeout = round(max(0, interval * 1_000_000)) if interval else None
     ev_r, ev_w = None, None
 
     try:
@@ -104,8 +104,8 @@ async def _wait_conn_async(gen: typing.Any, interval: float = 0.0) -> typing.Any
                 if ev_w is None:
                     ev_w = runtime._io_event_w(fileno)
                 await tonio.select(
-                    ev_r.wait(timeout),
-                    ev_w.wait(timeout),
+                    ev_r.waiter(timeout),
+                    ev_w.waiter(timeout),
                 )
                 if ev_r.is_set():
                     ready |= READY_R
@@ -116,14 +116,14 @@ async def _wait_conn_async(gen: typing.Any, interval: float = 0.0) -> typing.Any
             elif reader:
                 if ev_r is None:
                     ev_r = runtime._io_event_r(fileno)
-                await ev_r.wait(timeout)
+                await ev_r.waiter(timeout)
                 if ev_r.is_set():
                     ready |= READY_R
                     ev_r = None
             elif writer:
                 if ev_w is None:
                     ev_w = runtime._io_event_w(fileno)
-                await ev_w.wait(timeout)
+                await ev_w.waiter(timeout)
                 if ev_w.is_set():
                     ready |= READY_W
                     ev_w = None
