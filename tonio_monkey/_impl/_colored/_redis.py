@@ -6,6 +6,7 @@ import inspect
 import typing
 
 import redis as redis
+import redis._parsers.base
 import redis.asyncio.client
 import redis.asyncio.connection
 import redis.asyncio.lock
@@ -193,7 +194,9 @@ async def _tonio_gather(*coros: typing.Any, return_exceptions: bool = False) -> 
         return []
     if return_exceptions:
         try:
-            return await tonio.spawn(*coros)
+            result = await tonio.spawn(*coros)
+            # tonio.spawn returns value directly for single coro, list for multiple
+            return result if isinstance(result, list) else [result]
         except ExceptionGroup as eg:
             return list(eg.exceptions)
     await tonio.spawn.without_results(*coros)
@@ -269,4 +272,5 @@ async def _tonio_async_timeout(seconds: float | None) -> typing.AsyncGenerator[N
     yield
 
 
+redis._parsers.base.async_timeout = _tonio_async_timeout
 redis.asyncio.connection.async_timeout = _tonio_async_timeout
