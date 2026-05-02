@@ -1,1 +1,1 @@
-patches = ["httpx", "psycopg"]
+patches = ["httpx", "psycopg", "websockets"]

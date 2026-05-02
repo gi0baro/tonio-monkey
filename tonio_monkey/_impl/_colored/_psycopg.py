@@ -9,6 +9,7 @@ import psycopg._conninfo_attempts_async
 import psycopg.waiting
 import tonio.colored as tonio
 import tonio.colored.sync as sync
+import tonio.colored.sync.channel as channel
 import tonio.colored.time as time
 from psycopg import _conninfo_utils as _connutils, errors as e
 from psycopg._enums import Ready, Wait
@@ -138,10 +139,10 @@ async def _wait_conn_async(gen: typing.Any, interval: float = 0.0) -> typing.Any
 class TonioAQueue(typing.Generic[T]):
     def __init__(self, maxsize: int = 0) -> None:
         if maxsize > 0:
-            self._sender, self._receiver = sync.channel(maxsize)
+            self._sender, self._receiver = channel.channel(maxsize)
             self._bounded = True
         else:
-            self._sender, self._receiver = sync.unbounded_channel()
+            self._sender, self._receiver = channel.unbounded()
             self._bounded = False
 
     async def put(self, item: T) -> None:

@@ -9,10 +9,10 @@ import httpcore._synchronization
 import httpx as httpx
 import tonio.colored as tonio
 import tonio.colored.net as net
-import tonio.colored.net.tls
+import tonio.colored.net.tls as tls
 import tonio.colored.sync as sync
 import tonio.colored.time as time
-import tonio.exceptions
+import tonio.exceptions as tonio_exc
 from httpcore._backends.base import SOCKET_OPTION, AsyncNetworkBackend, AsyncNetworkStream
 from httpcore._exceptions import (
     ConnectError,
@@ -39,7 +39,7 @@ class TonioStream(AsyncNetworkStream):
 
     async def read(self, max_bytes: int, timeout: float | None = None) -> bytes:
         exc_map: dict[type[Exception], type[Exception]] = {
-            tonio.exceptions.ResourceBroken: ReadError,
+            tonio_exc.ResourceBroken: ReadError,
             OSError: ReadError,
         }
         with map_exceptions(exc_map):
@@ -54,7 +54,7 @@ class TonioStream(AsyncNetworkStream):
         if not buffer:
             return
         exc_map: dict[type[Exception], type[Exception]] = {
-            tonio.exceptions.ResourceBroken: WriteError,
+            tonio_exc.ResourceBroken: WriteError,
             OSError: WriteError,
         }
         with map_exceptions(exc_map):
@@ -66,7 +66,7 @@ class TonioStream(AsyncNetworkStream):
                 raise WriteTimeout("Timed out")
 
     async def aclose(self) -> None:
-        if isinstance(self._stream, net.tls.TLSStream):
+        if isinstance(self._stream, tls.TLSStream):
             await self._stream.close()
         else:
             self._stream.close()
@@ -78,11 +78,11 @@ class TonioStream(AsyncNetworkStream):
         timeout: float | None = None,
     ) -> AsyncNetworkStream:
         exc_map: dict[type[Exception], type[Exception]] = {
-            tonio.exceptions.ResourceBroken: ConnectError,
+            tonio_exc.ResourceBroken: ConnectError,
             OSError: ConnectError,
             ssl.SSLError: ConnectError,
         }
-        tls_stream = net.tls.TLSStream(
+        tls_stream = tls.TLSStream(
             self._stream,
             ssl_context,
             server_hostname=server_hostname,
@@ -99,7 +99,7 @@ class TonioStream(AsyncNetworkStream):
 
     def get_extra_info(self, info: str) -> typing.Any:
         if info == "ssl_object":
-            if isinstance(self._stream, net.tls.TLSStream):
+            if isinstance(self._stream, tls.TLSStream):
                 return self._stream._ssl
             return None
         if info == "client_addr":
@@ -123,7 +123,7 @@ class TonioBackend(AsyncNetworkBackend):
         socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
     ) -> AsyncNetworkStream:
         exc_map: dict[type[Exception], type[Exception]] = {
-            tonio.exceptions.ResourceBroken: ConnectError,
+            tonio_exc.ResourceBroken: ConnectError,
             OSError: ConnectError,
         }
         with map_exceptions(exc_map):
@@ -148,7 +148,7 @@ class TonioBackend(AsyncNetworkBackend):
         socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
     ) -> AsyncNetworkStream:
         exc_map: dict[type[Exception], type[Exception]] = {
-            tonio.exceptions.ResourceBroken: ConnectError,
+            tonio_exc.ResourceBroken: ConnectError,
             OSError: ConnectError,
         }
         with map_exceptions(exc_map):

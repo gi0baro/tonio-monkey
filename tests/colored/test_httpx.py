@@ -8,12 +8,12 @@ import pytest
 pytestmark = [
     pytest.mark.tonio,
     pytest.mark.skipif(
-        not os.environ.get("TM_HTTPX_SERVER_ENDPOINT"),
-        reason="TM_HTTPX_SERVER_ENDPOINT not set",
+        not os.environ.get("TM_HTTPX_ENDPOINT"),
+        reason="TM_HTTPX_ENDPOINT not set",
     ),
 ]
 
-ENDPOINT = os.environ.get("TM_HTTPX_SERVER_ENDPOINT", "")
+ENDPOINT = os.environ.get("TM_HTTPX_ENDPOINT", "")
 
 
 async def test_streaming_echo():
