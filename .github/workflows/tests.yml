@@ -37,9 +37,15 @@ jobs:
         ports:
         - 5432:5432
 
+      redis:
+        image: redis:8-alpine
+        ports:
+        - 6379:6379
+
     env:
       TM_HTTPX_ENDPOINT: http://127.0.0.1:8000/echo
       TM_PSYCOPG_DSN: postgresql://postgres:postgres@localhost:5432/test
+      TM_REDIS_DSN: redis://@127.0.0.1:6379/0
       TM_WS_ENDPOINT: ws://127.0.0.1:8000/ws
 
     steps:
