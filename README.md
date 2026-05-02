@@ -8,6 +8,7 @@ TonIO-Monkey provides patches for the following packages:
 
 - [httpx](https://pypi.org/project/httpx/) (*colored* only)
 - [psycopg](https://pypi.org/project/psycopg/) (*colored* only)
+- [websockets](https://pypi.org/project/websockets/) (*colored* only)
 
 ## Installation
 
