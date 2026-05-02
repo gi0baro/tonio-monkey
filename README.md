@@ -1,6 +1,9 @@
 # TonIO-Monkey
 
-Monkey-patch utilities for [TonIO](https://github.com/gi0baro/tonio).
+Monkey-patch utilities for [TonIO](https://github.com/gi0baro/tonio).    
+TonIO-Monkey lets you use popular asyncio packages with TonIO runtime.
+
+> **Note:** the vast majority of code in this project is LLM generated.
 
 ## Available patches
 
@@ -22,7 +25,13 @@ You can install TonIO-Monkey using pip or other package managers, specifying the
 Once you installed TonIO-Moneky with the relevant extras, you can simply import the target package from TonIO-Monkey:
 
 ```python
+import tonio.colored as tonio
 from tonio_monkey.colored import httpx
+
+@tonio.main
+async def main():
+    async with httpx.AsyncClient() as client:
+        r = await client.get('http://www.example.com')
 ```
 
 ## License
