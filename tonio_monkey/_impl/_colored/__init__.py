@@ -1,1 +1,1 @@
-patches = ["httpx", "httpx2", "psycopg", "redis", "websockets"]
+patches = ["asgiref", "django", "httpx", "httpx2", "psycopg", "redis", "websockets"]

@@ -33,6 +33,8 @@ dependencies = [
 #tonio = { git = "https://github.com/gi0baro/tonio" }
 
 [project.optional-dependencies]
+asgiref = ["asgiref~=3.11"]
+django = ["django~=6.0"]
 httpx = ["httpx~=0.28.1"]
 httpx2 = ["httpx2~=2.2.0"]
 psycopg = ["psycopg~=3.3.3"]

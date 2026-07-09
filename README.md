@@ -9,6 +9,8 @@ TonIO-Monkey lets you use popular asyncio packages with TonIO runtime.
 
 TonIO-Monkey provides patches for the following packages:
 
+- [asgiref](https://pypi.org/project/asgiref/) (*colored* only)
+- [django](https://pypi.org/project/django/) (*colored* only)
 - [httpx](https://pypi.org/project/httpx/) (*colored* only)
 - [httpx2](https://pypi.org/project/httpx2/) (*colored* only)
 - [psycopg](https://pypi.org/project/psycopg/) (*colored* only)
