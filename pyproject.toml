@@ -8,7 +8,7 @@ version = "0.2.1"
 description = "Monkey-patch utilities for TonIO runtime"
 readme = "README.md"
 license = "BSD-3-Clause"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 
 authors = [
     { name = "Giovanni Barillari", email = "g@baro.dev" }
@@ -22,12 +22,11 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: Free Threading :: 3 - Stable",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
 
 dependencies = [
-    "tonio~=0.5",
+    "tonio~=0.7.1",
 ]
 
 #[tool.uv.sources]
