@@ -156,7 +156,7 @@ async def _tonio_tcp_connect(self: typing.Any) -> None:
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
                 for k, v in self.socket_keepalive_options.items():
                     sock.setsockopt(socket.SOL_TCP, k, v)
-        except (OSError, TypeError):
+        except OSError, TypeError:
             self._writer.close()
             raise
 
