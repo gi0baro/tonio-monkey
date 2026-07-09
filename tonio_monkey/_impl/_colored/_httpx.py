@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ssl
+import threading
 import typing
 
 import httpcore
@@ -210,6 +211,18 @@ class TonioAsyncShieldCancellation:
         return False
 
 
+class ThreadLock:
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+
+    def __enter__(self) -> ThreadLock:
+        self._lock.acquire()
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self._lock.release()
+
+
 async def _tonio_init_backend(self: typing.Any) -> None:
     if not hasattr(self, "_backend"):
         self._backend = TonioBackend()
@@ -220,6 +233,7 @@ httpcore._synchronization.AsyncLock = sync.Lock
 httpcore._synchronization.AsyncEvent = TonioAsyncEvent
 httpcore._synchronization.AsyncSemaphore = TonioAsyncSemaphore
 httpcore._synchronization.AsyncShieldCancellation = TonioAsyncShieldCancellation
+httpcore._synchronization.AsyncThreadLock = ThreadLock
 
 _patched_modules = []
 for _name in (
@@ -244,3 +258,5 @@ for _mod in _patched_modules:
         _mod.AsyncSemaphore = TonioAsyncSemaphore
     if hasattr(_mod, "AsyncShieldCancellation"):
         _mod.AsyncShieldCancellation = TonioAsyncShieldCancellation
+    if hasattr(_mod, "AsyncThreadLock"):
+        _mod.AsyncThreadLock = ThreadLock
