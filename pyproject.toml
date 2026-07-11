@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tonio-monkey"
-version = "0.2.1"
+version = "0.3.0"
 description = "Monkey-patch utilities for TonIO runtime"
 readme = "README.md"
 license = "BSD-3-Clause"
