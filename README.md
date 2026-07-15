@@ -13,6 +13,7 @@ TonIO-Monkey provides patches for the following packages:
 - [httpx2](https://pypi.org/project/httpx2/) (*colored* only)
 - [psycopg](https://pypi.org/project/psycopg/) (*colored* only)
 - [redis](https://pypi.org/project/redis/) (*colored* only)
+- [starlette](https://pypi.org/project/starlette/) (*colored* only)
 - [websockets](https://pypi.org/project/websockets/) (client only, *colored* only)
 
 ## Installation
