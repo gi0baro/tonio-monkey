@@ -9,6 +9,7 @@ TonIO-Monkey lets you use popular asyncio packages with TonIO runtime.
 
 TonIO-Monkey provides patches for the following packages:
 
+- [fastapi](https://pypi.org/project/fastapi/) (*colored* only)
 - [httpx](https://pypi.org/project/httpx/) (*colored* only)
 - [httpx2](https://pypi.org/project/httpx2/) (*colored* only)
 - [psycopg](https://pypi.org/project/psycopg/) (*colored* only)
