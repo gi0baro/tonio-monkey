@@ -67,13 +67,15 @@ async def _drive(app, path: str, spec_version: str = "2.4", headers=None):
     }
     sent: list[dict] = []
     request_delivered = False
+    idle = tonio.Event()
 
     async def receive():
         nonlocal request_delivered
         if not request_delivered:
             request_delivered = True
             return {"type": "http.request", "body": b"", "more_body": False}
-        await tonio.sleep(3600)  # no further client input
+        # Connected but idle client: block until the framework cancels us.
+        await idle.wait(None)
 
     async def send(message):
         sent.append(message)
